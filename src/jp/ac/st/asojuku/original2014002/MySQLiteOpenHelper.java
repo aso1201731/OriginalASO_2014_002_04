@@ -69,6 +69,42 @@ public class MySQLiteOpenHelper extends SQLiteOpenHelper {
 		return rtString;
 	}
 
+	/**
+	 * Hitokotoテーブルからデータをすべて取得
+	 * @param SQLiteDatabase SELECTアクセスするDBのインスタンス変数
+	 * @return 取得したデータの塊の表（導出表）のレコードをポイントするカーソル
+	 */
+
+	public SQLiteCursor selectHitokotoList(SQLiteDatabase db) {
+		SQLiteCursor cursor = null;
+
+		String sqlstr = " SELECT id, phrase FROM Hitokoto ORDER BY id; ";
+		try {
+			cursor = (SQLiteCursor)db.rawQuery(sqlstr, null);
+			if(cursor.getCount()!=0) {
+				cursor.moveToFirst();
+			}
+		} catch (SQLException e) {
+			Log.e("ERROR", e.toString());
+		} finally {
+
+		}
+		return cursor;
+	}
+
+
+	public void deleteHitokoto(SQLiteDatabase db, int id) {
+		String sqlstr = " DELETE FROM Hitokoto WHERE id =" + id + ";";
+		try {
+			db.beginTransaction();
+			db.execSQL(sqlstr);
+			db.setTransactionSuccessful();
+		} catch (SQLException e) {
+			Log.e("ERROR", e.toString());
+		} finally {
+			db.endTransaction();
+		}
+	}
 
 
 
