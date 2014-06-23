@@ -1,7 +1,6 @@
 package jp.ac.st.asojuku.original2014002;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.database.sqlite.SQLiteCursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
@@ -13,7 +12,7 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.Toast;
-
+//import android.widget.Toast;
 
 public class ListActivity extends Activity implements View.OnClickListener, AdapterView.OnItemClickListener{
 
@@ -28,18 +27,56 @@ public class ListActivity extends Activity implements View.OnClickListener, Adap
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.list_activity);
 
-		Intent intent = getIntent();
+
 	}
 
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 		// TODO 自動生成されたメソッド・スタブ
+		if(this.selectedID!=-1) {
+			parent.getChildAt(this.lastPosition).setBackgroundColor(0);
+		}
+		view.setBackgroundColor(android.graphics.Color.RED);
+
+		SQLiteCursor cursor = (SQLiteCursor)parent.getItemAtPosition(position);
+
+		this.selectedID = cursor.getInt(cursor.getColumnIndex("id"));
+		this.lastPosition = position;
 
 	}
 
 	@Override
 	public void onClick(View v) {
 		// TODO 自動生成されたメソッド・スタブ
+		switch(v.getId()) {
+		case R.id.button2:
+			if(this.selectedID != -1) {
+				this.deleteFromHitokoto(this.selectedID);
+				ListView lstHitokoto = (ListView)findViewById(R.id.listView1);
+				this.setDBValuetoList(lstHitokoto);
+				this.selectedID = -1;
+				this.lastPosition = -1;
+			} else {
+				Toast.makeText(ListActivity.this, "削除する行を選択しろ", Toast.LENGTH_SHORT).show();
+			}
+			break;
+		case R.id.button1:
+			finish();
+		break;
+		}
+
+	}
+
+	private void deleteFromHitokoto(int id) {
+		// TODO 自動生成されたメソッド・スタブ
+		if(sdb == null) {
+			helper  = new MySQLiteOpenHelper(getApplicationContext());
+		} try {
+			sdb = helper.getWritableDatabase();
+		} catch(SQLiteException e) {
+			Log.e("ERROR", e.toString());
+		}
+		this.helper.deleteHitokoto(sdb, id);
 
 	}
 
@@ -58,13 +95,14 @@ public class ListActivity extends Activity implements View.OnClickListener, Adap
 		lstHitokoto.setOnItemClickListener(this);
 
 		this.setDBValuetoList(lstHitokoto);
+
 	}
 
 	private void setDBValuetoList(ListView lstHitokoto) {
 		// TODO 自動生成されたメソッド・スタブ
 		SQLiteCursor cursor = null;
 		if(sdb == null) {
-			helper = new MySQLiteOpenHelper(getApplicationContext());
+			helper  = new MySQLiteOpenHelper(getApplicationContext());
 		}
 
 		try {

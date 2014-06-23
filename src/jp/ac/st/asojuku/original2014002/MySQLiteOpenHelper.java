@@ -31,7 +31,7 @@ public class MySQLiteOpenHelper extends SQLiteOpenHelper {
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 		// TODO 自動生成されたメソッド・スタブ
-		db.execSQL("DROP TABLE Hitokoto");
+		db.execSQL("DROP TABLE Hitokoto;");
 		onCreate(db);
 	}
 
